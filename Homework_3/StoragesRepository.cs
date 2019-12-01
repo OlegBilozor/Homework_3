@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+
 
 namespace Homework_3
 {
@@ -27,6 +30,11 @@ namespace Homework_3
         }
         public DataStorage Find(int index, string value) //Method to find a specific Data Storage. Finds only first appropriate item
         {
+            if (_storages.Count == 0)
+            {
+                Console.WriteLine("There are no items!");
+                return null;
+            }
             DataStorage storage = null;
             switch (index)
             {
@@ -61,6 +69,11 @@ namespace Homework_3
         }
         public void Remove(int index, string value) //Method for removing Data Storages form the list. Removes all appropriate items
         {
+            if (_storages.Count == 0)
+            {
+                Console.WriteLine("There are no items!");
+                return;
+            }
             int counter = 0;
             switch(index)
             {
@@ -115,7 +128,12 @@ namespace Homework_3
         }
         public void Change(int index, string value, DataStorage storage) //Method for changing some property of some Data Storage
         {
-            if(!(_storages.Contains(storage)))
+            if (_storages.Count == 0)
+            {
+                Console.WriteLine("There are no items!");
+                return;
+            }
+            if (!(_storages.Contains(storage)))
             {
                 Console.WriteLine("Item doesn't belong to list");
                 return;
@@ -237,6 +255,166 @@ namespace Homework_3
                         Console.WriteLine("Invalid index!");
                         break;
                 }
+            }
+        }
+
+        public void WriteToXml(string fileName)
+        {
+            var writer = new XmlTextWriter(fileName, Encoding.UTF8); //creating new document to write all storages
+            writer.WriteStartDocument();
+            writer.WriteStartElement("data_storages");
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Close();
+            _storages.ForEach(s=>s.Upload(fileName)); //writing each storage in the document
+        }
+
+        public void ReadFromXml(string fileName)
+        {
+            try
+            {
+                var doc = new XmlDocument();
+                doc.Load(fileName);
+                var storageNodes = doc.GetElementsByTagName("flash_drive"); //reading all flash drives
+                if (storageNodes.Count > 0)
+                {
+                    foreach (XmlElement storageNode in storageNodes)
+                    {
+                        FlashDrive newFlashDrive = new FlashDrive("");
+                        foreach (XmlElement storageProps in storageNode)
+                        {
+                            switch (storageProps.Name)
+                            {
+                                case "name":
+                                    newFlashDrive.Name = storageProps.InnerText;
+                                    break;
+                                case "producer":
+                                    newFlashDrive.Producer = storageProps.InnerText;
+                                    break;
+                                case "model":
+                                    newFlashDrive.Model = storageProps.InnerText;
+                                    break;
+                                case "quantity":
+                                    Int32.TryParse(storageProps.InnerText, out int qua);
+                                    newFlashDrive.Quantity = qua;
+                                    break;
+                                case "price":
+                                    Decimal.TryParse(storageProps.InnerText, out decimal prc);
+                                    newFlashDrive.Price = prc;
+                                    break;
+                                case "speed":
+                                    Double.TryParse(storageProps.InnerText, out double spd);
+                                    newFlashDrive.Speed = spd;
+                                    break;
+                                case "memory_amount":
+                                    Int32.TryParse(storageProps.InnerText, out int mem);
+                                    newFlashDrive.MemoryAmount = mem;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        _storages.Add(newFlashDrive);
+                    }
+                }
+
+                storageNodes = doc.GetElementsByTagName("hdd"); //reading all HDDs
+                if (storageNodes.Count > 0)
+                {
+                    foreach (XmlElement storageNode in storageNodes)
+                    {
+                        Hdd newHdd = new Hdd("");
+                        foreach (XmlElement storageProps in storageNode)
+                        {
+                            switch (storageProps.Name)
+                            {
+                                case "name":
+                                    newHdd.Name = storageProps.InnerText;
+                                    break;
+                                case "producer":
+                                    newHdd.Producer = storageProps.InnerText;
+                                    break;
+                                case "model":
+                                    newHdd.Model = storageProps.InnerText;
+                                    break;
+                                case "quantity":
+                                    Int32.TryParse(storageProps.InnerText, out int qua);
+                                    newHdd.Quantity = qua;
+                                    break;
+                                case "price":
+                                    Decimal.TryParse(storageProps.InnerText, out decimal prc);
+                                    newHdd.Price = prc;
+                                    break;
+                                case "speed":
+                                    Double.TryParse(storageProps.InnerText, out double spd);
+                                    newHdd.Speed = spd;
+                                    break;
+                                case "disk_size":
+                                    Int32.TryParse(storageProps.InnerText, out int dsz);
+                                    newHdd.DiskSize = dsz;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        _storages.Add(newHdd);
+                    }
+                }
+
+                storageNodes = doc.GetElementsByTagName("dvd"); //reading all DVDs
+                if (storageNodes.Count > 0)
+                {
+                    foreach (XmlElement storageNode in storageNodes)
+                    {
+                        Dvd newDvd = new Dvd("");
+                        foreach (XmlElement storageProps in storageNode)
+                        {
+                            switch (storageProps.Name)
+                            {
+                                case "name":
+                                    newDvd.Name = storageProps.InnerText;
+                                    break;
+                                case "producer":
+                                    newDvd.Producer = storageProps.InnerText;
+                                    break;
+                                case "model":
+                                    newDvd.Model = storageProps.InnerText;
+                                    break;
+                                case "quantity":
+                                    Int32.TryParse(storageProps.InnerText, out int qua);
+                                    newDvd.Quantity = qua;
+                                    break;
+                                case "price":
+                                    Decimal.TryParse(storageProps.InnerText, out decimal prc);
+                                    newDvd.Price = prc;
+                                    break;
+                                case "reading_speed":
+                                    Double.TryParse(storageProps.InnerText, out double rspd);
+                                    newDvd.ReadingSpeed = rspd;
+                                    break;
+                                case "writing_speed":
+                                    Double.TryParse(storageProps.InnerText, out double wspd);
+                                    newDvd.WritingSpeed = wspd;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        _storages.Add(newDvd);
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Such file does not exist!");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

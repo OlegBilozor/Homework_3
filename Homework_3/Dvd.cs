@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+
 
 namespace Homework_3
 {
@@ -31,7 +33,48 @@ namespace Homework_3
         }
         public override void Upload(string file)
         {
-            Console.WriteLine($"DVD disk data was uploaded to {file}");
+            try
+            {
+                var doc = new XmlDocument();
+                doc.Load(file);
+                var root = doc.CreateElement("dvd");
+                doc.DocumentElement?.AppendChild(root);
+
+                var name = doc.CreateElement("name");
+                name.InnerText = Name;
+                root.AppendChild(name);
+
+                var producer = doc.CreateElement("producer");
+                producer.InnerText = Producer;
+                root.AppendChild(producer);
+
+                var model = doc.CreateElement("model");
+                model.InnerText = Model;
+                root.AppendChild(model);
+
+                var quantity = doc.CreateElement("quantity");
+                quantity.InnerText = $"{Quantity}";
+                root.AppendChild(quantity);
+
+                var price = doc.CreateElement("price");
+                price.InnerText = $"{Price}";
+                root.AppendChild(price);
+
+                var readingSpeed = doc.CreateElement("reading_speed");
+                readingSpeed.InnerText = $"{ReadingSpeed}";
+                root.AppendChild(readingSpeed);
+
+                var writingSpeed = doc.CreateElement("writing_speed");
+                writingSpeed.InnerText = $"{WritingSpeed}";
+                root.AppendChild(writingSpeed);
+
+                doc.Save(file);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
         #endregion
     }
